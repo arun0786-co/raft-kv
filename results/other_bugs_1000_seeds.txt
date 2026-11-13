@@ -1,0 +1,12 @@
+bug: vote_without_log_check, profile: default
+runs with a violation: 984
+first: seed 0, tick 662: new leader 0 of term 14 lacks committed entry 68
+bug: vote_without_log_check, profile: aggressive
+runs with a violation: 1000
+first: seed 0, tick 232: new leader 2 of term 6 lacks committed entry 9
+bug: stale_reads, profile: default
+runs with a violation: 309
+first: seed 0, tick 3017: history is not linearizable on key 1
+bug: stale_reads, profile: aggressive
+runs with a violation: 625
+first: seed 0, tick 3060: history is not linearizable on key 2

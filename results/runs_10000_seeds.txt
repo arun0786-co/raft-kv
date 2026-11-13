@@ -1,0 +1,56 @@
+bug: none, profile: default
+seeds: 10000, ticks of faults each: 3000, nodes: 5, clients: 5
+runs with a violation: 0
+client operations completed: 5345573, unanswered at the end: 0
+crashes: 85401, partition changes: 120163, leaders elected: 71585, raft messages: 219335268
+operation latency in ticks: p50 13, p90 71, p99 208, max 1039
+longest stretch without any leader: 633 ticks
+wall time: 41.1 s
+
+bug: none, profile: aggressive
+seeds: 10000, ticks of faults each: 3000, nodes: 5, clients: 5
+runs with a violation: 0
+client operations completed: 2456047, unanswered at the end: 0
+crashes: 292379, partition changes: 300799, leaders elected: 153948, raft messages: 371121408
+operation latency in ticks: p50 21, p90 150, p99 519, max 2584
+longest stretch without any leader: 419 ticks
+wall time: 49.9 s
+
+bug: commit_old_terms, profile: aggressive
+seeds: 10000, ticks of faults each: 3000, nodes: 5, clients: 5
+runs with a violation: 75
+first: seed 98, tick 1176: new leader 2 of term 25 lacks committed entry 76
+client operations completed: 2508328, unanswered at the end: 0
+crashes: 291411, partition changes: 301750, leaders elected: 153513, raft messages: 370732251
+operation latency in ticks: p50 22, p90 149, p99 465, max 1949
+longest stretch without any leader: 587 ticks
+wall time: 50.4 s
+
+bug: forget_vote, profile: aggressive
+seeds: 10000, ticks of faults each: 3000, nodes: 5, clients: 5
+runs with a violation: 12
+first: seed 239, tick 1904: two leaders in term 32: 1 and 4
+client operations completed: 2457658, unanswered at the end: 0
+crashes: 292273, partition changes: 300930, leaders elected: 153896, raft messages: 371355835
+operation latency in ticks: p50 21, p90 149, p99 520, max 2584
+longest stretch without any leader: 419 ticks
+wall time: 50.5 s
+
+bug: commit_old_terms, profile: default
+seeds: 10000, ticks of faults each: 3000, nodes: 5, clients: 5
+runs with a violation: 0
+client operations completed: 5346894, unanswered at the end: 0
+crashes: 85382, partition changes: 120165, leaders elected: 71576, raft messages: 219387619
+operation latency in ticks: p50 13, p90 71, p99 208, max 1039
+longest stretch without any leader: 633 ticks
+wall time: 42.3 s
+
+bug: forget_vote, profile: default
+seeds: 10000, ticks of faults each: 3000, nodes: 5, clients: 5
+runs with a violation: 0
+client operations completed: 5345882, unanswered at the end: 0
+crashes: 85393, partition changes: 120149, leaders elected: 71566, raft messages: 219329592
+operation latency in ticks: p50 13, p90 71, p99 208, max 1039
+longest stretch without any leader: 633 ticks
+wall time: 43.0 s
+
