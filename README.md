@@ -22,20 +22,19 @@ pre-vote.
 
 ## How it is tested
 
-- **Faults per tick.** Messages take 1 to 6 ticks and 5% are dropped, 2% duplicated. The network
-  splits into random halves and heals, and nodes crash and restart from their persistent state
-  (term, vote, log). Five clients issue gets, puts and appends on four keys, retrying on
-  timeouts and redirects.
-- **Checks during the run:**
-  - at most one leader per term
-  - the log matching property, across all node pairs, live or crashed
-  - every new leader holds every committed entry
-  - every node applies the same command at each index
-  - a live node's commit index never decreases
-- **After the faults** the network heals, outstanding requests finish, and the whole client
-  history is checked for linearizability.
-- **The aggressive profile** restarts nodes within a few ticks, crashes and partitions more often,
-  and sends one log entry per message.
+Messages take 1 to 6 ticks, and 5% are dropped and 2% duplicated. The network splits into
+random halves and heals, and nodes crash and restart from their persistent state (term, vote,
+log). Five clients issue gets, puts and appends on four keys, retrying on timeouts and
+redirects.
+
+While the run goes, the simulator checks that there's at most one leader per term, that the
+log matching property holds across all node pairs (live or crashed), that every new leader
+holds every committed entry, that every node applies the same command at each index, and that
+a live node's commit index never decreases. After the faults stop, the network heals, the
+outstanding requests finish, and the whole client history is checked for linearizability.
+
+There's also an aggressive profile, which restarts nodes within a few ticks, crashes and
+partitions more often, and sends one log entry per message.
 
 ## Results
 
@@ -47,8 +46,8 @@ pre-vote.
 Every operation was answered and every history was linearizable. With default faults,
 latency is 13 ticks at the median and 208 at the 99th percentile. 10,000 runs take 41 seconds.
 
-**Do the checks catch real mistakes?** Four bugs can be switched on, each a known way to
-break Raft:
+To see whether the checks catch real mistakes, four bugs can be switched on, each a known way
+to break Raft:
 
 | Planted bug | Default faults | Aggressive faults | What catches it |
 |---|---|---|---|
@@ -57,16 +56,12 @@ break Raft:
 | Count replicas to commit entries from earlier terms (figure 8 of the paper) | 0 of 10,000 | 75 of 10,000 | a new leader lacks a committed entry |
 | Forget the vote on restart | 0 of 10,000 | 12 of 10,000 | two leaders in one term |
 
-The last two rows are the interesting ones.
-
-- **Default faults never find them**, in 10,000 runs each.
-- **The figure 8 bug is masked.** The new leader's no-op entry travels in the same message
-  as the old entry, so the old entry never reaches a majority alone. Sending one entry per
-  message exposes it.
-- **The forgotten vote needs a quick restart.** The node has to come back inside the election
-  it voted in, and default restarts take 20 to 200 ticks.
-
-A test that passes is only as good as the faults it tries.
+The last two rows are the interesting ones, because the default faults never find them in
+10,000 runs each. The figure 8 bug is masked there: the new leader's no-op entry travels in
+the same message as the old entry, so the old entry never reaches a majority on its own.
+Sending one entry per message exposes it. The forgotten vote needs a quick restart, since the
+node has to come back inside the election it voted in, and default restarts take 20 to 200
+ticks. So a clean run only means something for the faults it actually tried.
 
 The simulator also found a bug in my own Raft on its first run. A delayed append carrying
 fewer entries than the follower had already committed lowered the follower's commit index.
@@ -83,11 +78,11 @@ Raw output of the runs above: [results/](results/).
 
 ## Limits
 
-- **No real network or disk.** Persistence is modelled: a crash keeps exactly what Raft says must be
-  on disk before replying. Torn writes and lost fsyncs are not modelled.
-- **No snapshots, so logs grow without bound.** There are no membership changes either.
-- **The linearizability check is exponential in the worst case.** Five clients keep it fast.
-- **Time is in ticks**, so latencies are relative, not milliseconds.
+- No real network or disk. Persistence is modelled: a crash keeps exactly what Raft says must
+  be on disk before replying. Torn writes and lost fsyncs aren't modelled.
+- No snapshots, so logs grow without bound, and no membership changes either.
+- The linearizability check is exponential in the worst case. Five clients keep it fast.
+- Time is in ticks, so latencies are relative and not in milliseconds.
 
 ## References
 
